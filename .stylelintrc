@@ -1,0 +1,24 @@
+{
+	"plugins": [		
+		"./custom_lint_rules/selector-no-unnecessary-nesting/index.js",
+		"./custom_lint_rules/no-extending-classes/index.js"
+	],
+	"rules": {
+		"custom_lint_rules/selector-no-unnecessary-nesting":true,	
+		"custom_lint_rules/no-extending-classes":true,
+		"selector-no-id":true,
+		"declaration-no-important":true,
+		"declaration-block-single-line-max-declarations":1,
+		"stylelint-disable-reason":"always-before",
+
+		"indentation":"tab",
+		"declaration-block-no-ignored-properties":true,
+		"no-descending-specificity":true,
+		"no-duplicate-selectors":true,
+		"declaration-block-no-duplicate-properties":true,
+		"no-indistinguishable-colors":true
+	}
+}
+
+
+

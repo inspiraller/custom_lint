@@ -1,0 +1,33 @@
+{
+  "name": "stevesproject",
+  "version": "1.0.0",
+  "description": "demo of custom plugin using htmlhint",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "nvm": "~/.nvm/nvm-exec which node | xargs -J % ln -sf % ./.nvm-node && chmod +x ./.nvm-node"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.18.2",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.1",
+    "gulp-clean-css": "^2.0.13",
+    "gulp-htmlhint": "^0.3.1",
+    "gulp-postcss": "^6.2.0",
+    "gulp-sass": "^2.3.2",
+    "gulp-sourcemaps": "^1.9.1",
+    "gulp-stylelint": "^3.5.0",
+    "gulp-util": "^3.0.7",
+    "gulp-watch": "^4.3.11",
+    "htmlhint": "file:custom_npm_plugins\\htmlhint",
+    "postcss": "^5.2.6",
+    "postcss-reporter": "^3.0.0",
+    "postcss-scss": "^0.4.0",
+    "stringify": "^5.1.0",
+    "stringify-object": "^3.1.0",
+    "stylelint": "^7.7.0",
+    "stylelint-test-rule-tape": "^0.2.0"
+  }
+}

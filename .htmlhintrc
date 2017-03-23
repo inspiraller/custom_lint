@@ -1,0 +1,8 @@
+{
+    "tag-pair": true,
+    "multiple-classes-same-property":"strStylesPaths=C:\\baps\\custom_lint\\www\\dist\\css;strRegExcludeClasses=(\\.gr\\-1|\\.gr\\-2)+;isExcludeBemModifier=true;",
+    "id-unique":false,
+    "attr-value-double-quotes":false,
+    "title-require":false,
+    "special-char-escape":false
+}
