@@ -1,20 +1,19 @@
-
 //var stylelint = require("stylelint");
 //var stringify = require("stringify-object");
 
 // note: comments below are to indicate how to convert this plugin to send pull request to stylelint
 // replace the javascript line with the one in the comment.
 
+var util = require('util');
 var stylelint = require("stylelint");
 var report = stylelint.utils.report; //require("../../utils/report");
 var ruleName = "custom_lint_rules/selector-no-unnecessary-nesting"; //"selector-no-unnecessary-nesting";
 var ruleMessages = stylelint.utils.ruleMessages;//require("../../utils/ruleMessages") 
 var messages = ruleMessages(ruleName, {
   rejected: function(a, b){
-  	return  `Expected selector "${a}" to exist for selector "${b}"`;
+  	return  `Expected selector "${a}" with declarations to exist for selector "${b}"`;
   }
 })
-
 
 module.exports = stylelint.createPlugin(ruleName, function(option1, option2) { //var rule = function (actual) {
 
@@ -23,12 +22,36 @@ module.exports = stylelint.createPlugin(ruleName, function(option1, option2) { /
 	}
 
 	var getWholeSelector = function(node, strSelector){
-		if(node.parent && node.parent.type!=='root'){
-			return getWholeSelector(node.parent, node.parent.selector + ' ' + strSelector);
+
+//                                                  if not @media
+//                                                        \/
+		if(node.parent && node.parent.type!=='root' && node.parent.selector){
+			var regAmpersand = /^\s*\&\s*([\#\.])/;
+			var isAmpersand = (strSelector.search(regAmpersand)===-1)?false:true;
+
+
+			var strSelectorWithoutAmpersand = (isAmpersand)?strSelector.replace(regAmpersand,'$1'):' '  + strSelector;
+
+			return getWholeSelector(node.parent, node.parent.selector + strSelectorWithoutAmpersand);
+			
 		}else{
 			return strSelector;
 		}
 	}
+
+	var excludeSelectors = function(strCommaSelectors){
+			// remove pseudo code.
+			// We will allow pseudo overrides and adjacent siblings as this plugin is mainly focused on reducing nesting on elements.
+			return strCommaSelectors.replace(/\&?\s*[\:\~\+][^\,]+(\,|$)/g,'$1');
+	}
+	var hasDeclarations = function(root, rule){
+		// note: If a selector has an @include. We are not testing to see if that @include has declarations.
+		// It is expensive checking and unnecessarily complicated. 
+		// It is enough to know that this selector intended to have includes.
+		return (rule.nodes.length > 0)?true:false;
+	}
+
+
 	var collectAllSelectors = function(root){
 
 		var objSelectors = {};
@@ -39,13 +62,29 @@ module.exports = stylelint.createPlugin(ruleName, function(option1, option2) { /
 
 			// iterate all selectors in commas 
 			var strCommaSelectors = rule.selector;
+
+//console.log('#############################################');
+//console.log('strCommaSelectors = ' + strCommaSelectors);
+
+			strCommaSelectors = excludeSelectors(strCommaSelectors);
+
+			if(!hasDeclarations(root, rule)){
+				return;
+			}
+
 			var arrCommaSelectors = strCommaSelectors.split(',');
 
 			for(var i=0, intLen = arrCommaSelectors.length; i < intLen; ++i){
 				var strSelector = arrCommaSelectors[i];
 
 				var strWholeSelector = getWholeSelector(rule, strSelector);
-				
+
+				// replace line breaks with single space
+				strWholeSelector = strWholeSelector.replace(/\s/g,' ');
+
+				// trim
+				strWholeSelector = strWholeSelector.replace(/^\s+/,'');
+//console.log('strWholeSelector = "' + strWholeSelector + '"');
 
 				var strSelectorTrimmed = trim(strWholeSelector);
 				objSelectors[strSelectorTrimmed] = true;
@@ -124,16 +163,13 @@ module.exports = stylelint.createPlugin(ruleName, function(option1, option2) { /
 				
 			}
 		}
-
 	}
 
 	return function(root, result) {				
 		var objAllFiles = collectAllSelectors(root);
 		iterateNestItemsToTestChildRuleExist(result, objAllFiles);
-
 		return {};
 	}
-
 
 });// don't forget to remove this parenthesis for stylelint pull request 
 
@@ -143,8 +179,3 @@ module.exports.ruleName = ruleName;
 //rule.ruleName = ruleName;
 //rule.messages = messages;
 //module.exports = rule;
-
-
-
-
-
